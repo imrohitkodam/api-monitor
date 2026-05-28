@@ -74,9 +74,10 @@ Once the application is running, follow these steps to manage and monitor your A
 - On the left panel, use the **Add a Service** form to manually enter the API name, endpoint URL, description, and notification email.
 - Alternatively, use the **Quick-Add Popular APIs** dropdown to instantly monitor common services (like Stripe, Twilio, etc.).
 
-### 2. Running Health Checks
-- Click the **Run All Checks** button in the top navigation bar to ping all registered APIs.
-- The dashboard will update the status indicators (Healthy, Warning, Issue) and display latency metrics.
+### 2. Bulk AI Scanning & Network Checks
+- Click the **Scan All APIs** button in the top navigation bar to trigger a bulk deep audit for all registered APIs.
+- The system will process each API in the background using Gemini, and instantly email the generated professional PDF reports to their respective notification emails without blocking your workflow.
+- Basic network pings (latency and HTTP status checks) are handled entirely automatically by the background scheduler.
 
 ### 3. Automated Scanning & Notifications
 - Click **Schedule** in the top navigation to configure automatic background scans.
@@ -84,9 +85,8 @@ Once the application is running, follow these steps to manage and monitor your A
 
 ### 4. AI Diagnostics & Deep Auditing
 - In the bottom **AI Diagnostics & Deep Auditing** panel, select one of your registered API services.
-- Choose your preferred AI model (Gemini, Mistral, or Cohere).
-- If an endpoint is failing, you can use **Diagnose Issue** or **Suggest Fixes**.
-- Click **Compile PDF Report** to generate a comprehensive audit document. The professional report is displayed as an embedded PDF and automatically saved to the backend `/reports` directory.
+- If an endpoint is failing, you can use **Diagnose Issue** or **Suggest Fixes** for instant Gemini-powered troubleshooting.
+- Click **Compile PDF Report** to generate a comprehensive audit document for just that API. The professional report is displayed as an embedded PDF and automatically saved to the backend `/reports` directory.
 
 ---
 
