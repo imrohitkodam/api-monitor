@@ -28,7 +28,7 @@ if os.path.exists('.env'):
 
 try:
     from reportlab.lib.pagesizes import letter
-    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, PageBreak
     from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 except ImportError:
     pass
@@ -135,6 +135,12 @@ def query_gemini_search(api_key, integration, previous_report=None):
     You MUST return your entire response as a single, valid, raw JSON object (without Markdown code blocks). Use the following exact JSON structure:
 
     {{
+      "executive_summary": {{
+        "change_summary": "What exactly changed? (1-2 sentences summary of findings)",
+        "seriousness": "High/Medium/Low risk",
+        "grace_period_days": "Number of days (or approx time) before it completely breaks or is deprecated, e.g., '120 days' or 'Already dead'",
+        "old_vs_new": "What was the old behavior/version vs what it should be now."
+      }},
       "global_state": {{
         "latest_official_release": "What is the absolute latest, recommended standard API/SDK for this platform? e.g. REST API v2 using Webhooks",
         "recent_deprecations": ["List any major versions, endpoints, or SDKs that have been killed off or deprecated in recent years"]
@@ -246,6 +252,16 @@ def generate_text_report(output_data):
 
         audit = item.get("audit_report", {})
         if isinstance(audit, dict):
+            # Executive Summary
+            summary = audit.get("executive_summary")
+            if summary:
+                report_lines.append("--- EXECUTIVE SUMMARY ---")
+                report_lines.append(f"Change Summary: {summary.get('change_summary', 'N/A')}")
+                report_lines.append(f"Seriousness: {summary.get('seriousness', 'N/A')}")
+                report_lines.append(f"Grace Period: {summary.get('grace_period_days', 'N/A')}")
+                report_lines.append(f"Old vs New: {summary.get('old_vs_new', 'N/A')}")
+                report_lines.append("")
+
             # Global State
             global_state = audit.get("global_state", {})
             report_lines.append("--- GLOBAL STATE ---")
@@ -403,6 +419,15 @@ def generate_pdf_report(output_data, filename):
 
         audit = item.get("audit_report", {})
         if isinstance(audit, dict):
+            summary = audit.get("executive_summary")
+            if summary:
+                Story.append(Paragraph("EXECUTIVE SUMMARY", subtitle_style))
+                Story.append(Paragraph(f"<b>Change Summary:</b> {fmt(summary.get('change_summary', 'N/A'))}", normal_style))
+                Story.append(Paragraph(f"<b>Seriousness:</b> {fmt(summary.get('seriousness', 'N/A'))}", normal_style))
+                Story.append(Paragraph(f"<b>Grace Period:</b> {fmt(summary.get('grace_period_days', 'N/A'))}", normal_style))
+                Story.append(Paragraph(f"<b>Old vs New:</b> {fmt(summary.get('old_vs_new', 'N/A'))}", normal_style))
+                Story.append(PageBreak())
+
             Story.append(Paragraph("GLOBAL STATE", subtitle_style))
             global_state = audit.get("global_state", {})
             Story.append(
@@ -535,6 +560,12 @@ def send_report_via_email(
 
 def parse_malformed_json_to_dict(text):
     result = {
+        "executive_summary": {
+            "change_summary": "N/A",
+            "seriousness": "N/A",
+            "grace_period_days": "N/A",
+            "old_vs_new": "N/A"
+        },
         "global_state": {
             "latest_official_release": "N/A",
             "recent_deprecations": []
@@ -544,6 +575,16 @@ def parse_malformed_json_to_dict(text):
         "estimated_lifespan_and_risks": [],
         "future_outlook": "N/A"
     }
+
+    m = re.search(r'"change_summary"\s*:\s*"((?:\\.|[^"\\])*)"', text, re.DOTALL)
+    if m: result["executive_summary"]["change_summary"] = m.group(1).replace('\\"', '"')
+    m = re.search(r'"seriousness"\s*:\s*"((?:\\.|[^"\\])*)"', text, re.DOTALL)
+    if m: result["executive_summary"]["seriousness"] = m.group(1).replace('\\"', '"')
+    m = re.search(r'"grace_period_days"\s*:\s*"((?:\\.|[^"\\])*)"', text, re.DOTALL)
+    if m: result["executive_summary"]["grace_period_days"] = m.group(1).replace('\\"', '"')
+    m = re.search(r'"old_vs_new"\s*:\s*"((?:\\.|[^"\\])*)"', text, re.DOTALL)
+    if m: result["executive_summary"]["old_vs_new"] = m.group(1).replace('\\"', '"')
+
     m = re.search(
         r'"migration_path"\s*:\s*"((?:\\.|[^"\\])*)"',
         text,
