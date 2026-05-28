@@ -79,6 +79,68 @@ def update_settings():
     save_settings(settings)
     return jsonify({"ok": True, "settings": settings})
 
+@app.route('/api/env', methods=['GET'])
+def get_env_settings():
+    env_path = os.path.join(ROOT_DIR, '.env')
+    config = {}
+    if os.path.exists(env_path):
+        with open(env_path, 'r') as f:
+            for line in f:
+                if '=' in line and not line.strip().startswith('#'):
+                    k, v = line.split('=', 1)
+                    k = k.strip()
+                    v = v.strip().strip("'\"")
+                    if k in ['GEMINI_API_KEY', 'SMTP_PASS'] and v:
+                        v = '********'
+                    config[k] = v
+    return jsonify(config)
+
+@app.route('/api/env', methods=['POST'])
+def update_env_settings():
+    env_path = os.path.join(ROOT_DIR, '.env')
+    data = request.json
+    existing = {}
+    if os.path.exists(env_path):
+        with open(env_path, 'r') as f:
+            for line in f:
+                if '=' in line and not line.strip().startswith('#'):
+                    k, v = line.split('=', 1)
+                    existing[k.strip()] = v.strip().strip("'\"")
+    
+    new_api_key = data.get('GEMINI_API_KEY')
+    
+    # Check if explicitly empty
+    if new_api_key == '':
+        return jsonify({"ok": False, "error": "GEMINI_API_KEY cannot be empty. Please provide a valid key."}), 400
+        
+    # Check if it's masked but nothing exists in backend
+    if new_api_key == '********' and not existing.get('GEMINI_API_KEY'):
+        return jsonify({"ok": False, "error": "GEMINI_API_KEY cannot be empty. Please provide a valid key."}), 400
+    
+    # Validate if it's a new key
+    if new_api_key and new_api_key != '********':
+        try:
+            test_url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={new_api_key}"
+            test_payload = {"contents": [{"parts": [{"text": "hi"}]}]}
+            req = urllib.request.Request(test_url, data=json.dumps(test_payload).encode("utf-8"), headers={"Content-Type": "application/json"}, method="POST")
+            with urllib.request.urlopen(req, timeout=10) as response:
+                pass # valid
+        except urllib.error.HTTPError as e:
+            return jsonify({"ok": False, "error": f"Invalid API Key. Google AI returned HTTP {e.code}."}), 400
+        except Exception as e:
+            return jsonify({"ok": False, "error": f"Failed to validate API Key: {str(e)}"}), 400
+            
+    for k in ['GEMINI_API_KEY', 'SMTP_USER', 'SMTP_PASS']:
+        if k in data and data[k] and data[k] != '********':
+            existing[k] = data[k]
+            os.environ[k] = data[k]
+            
+    with open(env_path, 'w') as f:
+        for k, v in existing.items():
+            f.write(f'{k}="{v}"\n')
+            
+    return jsonify({"ok": True})
+
 def call_ai(prompt):
     try:
         api_key = get_safe_api_key()
@@ -431,6 +493,81 @@ def update_service(id):
     conn.commit()
     conn.close()
     return jsonify({'ok': True})
+
+def background_audit_all(services_list):
+    try:
+        api_key = get_safe_api_key()
+    except Exception:
+        return # Missing API key
+
+    for svc in services_list:
+        notify_email = svc.get('notify_email')
+        if not notify_email:
+            continue
+            
+        item = {
+            "title": svc['name'],
+            "docsUrl": svc['url'],
+            "description": svc.get('description', '') or f"Monitored API service tag: {svc['tag']}."
+        }
+        
+        with open("scratch_debug.log", "a") as f: f.write(f"Starting audit for {item['title']}\n")
+        try:
+            audit_res = audit_apis.query_gemini_search(api_key, item)
+            with open("scratch_debug.log", "a") as f: f.write(f"Received Gemini response for {item['title']}\n")
+            
+            try:
+                parsed_data = json.loads(audit_res)
+            except json.JSONDecodeError:
+                try:
+                    fixed_res = audit_apis.re.sub(r'\}\s*\}$', ']\n}', audit_res.strip())
+                    parsed_data = json.loads(fixed_res)
+                except Exception:
+                    parsed_data = audit_apis.parse_malformed_json_to_dict(audit_res)
+            except Exception:
+                parsed_data = audit_apis.parse_malformed_json_to_dict(audit_res)
+            
+            with open("scratch_debug.log", "a") as f: f.write(f"Parsed AI report for {item['title']}\n")
+            
+            output_item = {
+                "title": item["title"],
+                "docsUrl": item["docsUrl"],
+                "audit_report": parsed_data
+            }
+            
+            clean_name = re.sub(r'[^a-zA-Z0-9_]', '_', item["title"]).lower()
+            attachment_name = f"{clean_name}_audit_report.pdf"
+            pdf_path = os.path.join(REPORTS_DIR, attachment_name)
+            
+            pdf_bytes = audit_apis.generate_pdf_report([output_item], pdf_path)
+            html_report = audit_apis.generate_html_report([output_item])
+            
+            with open("scratch_debug.log", "a") as f: f.write(f"Generated PDF & HTML for {item['title']}, sending email...\n")
+            
+            audit_apis.send_report_via_email(
+                notify_email,
+                html_report,
+                f"API Deep Audit Report: {item['title']}",
+                is_html=True,
+                attachments=[(attachment_name, pdf_bytes)]
+            )
+            with open("scratch_debug.log", "a") as f: f.write(f"Email sent successfully for {item['title']}\n")
+            print(f"[BACKGROUND AUDIT] Sent report for {item['title']} to {notify_email}")
+            time.sleep(2) # Avoid rate limits
+        except Exception as e:
+            with open("scratch_debug.log", "a") as f: f.write(f"Error for {item['title']}: {e}\n")
+            print(f"[BACKGROUND AUDIT ERROR] Failed for {item['title']}: {e}")
+
+@app.route('/api/ai/audit_all', methods=['POST'])
+def run_all_ai_audits():
+    conn = db_helper.get_db_connection()
+    services = conn.execute('SELECT * FROM services WHERE active = 1').fetchall()
+    conn.close()
+    
+    services_dict = [dict(s) for s in services]
+    threading.Thread(target=background_audit_all, args=(services_dict,), daemon=True).start()
+        
+    return jsonify({'ok': True, 'message': 'Background AI audit started for all services.'})
 
 @app.route('/api/check/all', methods=['POST'])
 def run_all_checks():

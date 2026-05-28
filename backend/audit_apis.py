@@ -101,20 +101,26 @@ def save_cache(cache):
 
 
 def query_gemini_fallback(url, headers, payload):
-    try:
-        req = urllib.request.Request(
-            url,
-            data=json.dumps(payload).encode("utf-8"),
-            headers=headers,
-            method="POST")
-        time.sleep(6)
-        with urllib.request.urlopen(req) as response:
-            res_data = json.loads(response.read().decode("utf-8"))
-            text = res_data["candidates"][0]["content"]["parts"][0]["text"]
-            return text
-    except Exception as e:
-        print(f"{RED}Fallback audit failed: {str(e)}{RESET}")
-        return f"Error: Unable to generate audit even with internal knowledge fallback ({str(e)})."
+    for attempt in range(1, 4):
+        try:
+            req = urllib.request.Request(
+                url,
+                data=json.dumps(payload).encode("utf-8"),
+                headers=headers,
+                method="POST")
+            time.sleep(6)
+            with urllib.request.urlopen(req, timeout=30) as response:
+                res_data = json.loads(response.read().decode("utf-8"))
+                text = res_data["candidates"][0]["content"]["parts"][0]["text"]
+                return text
+        except Exception as e:
+            if attempt < 3:
+                print(f"{YELLOW}Fallback audit error ({str(e)}). Retrying...{RESET}")
+                time.sleep(10)
+                continue
+            print(f"{RED}Fallback audit failed permanently: {str(e)}{RESET}")
+            return f"Error: Unable to generate audit even with internal knowledge fallback ({str(e)})."
+    return "Error: Unexpected fallback failure."
 
 
 def query_gemini_search(api_key, integration, previous_report=None):
@@ -193,7 +199,7 @@ def query_gemini_search(api_key, integration, previous_report=None):
             method="POST")
         try:
             time.sleep(6)
-            with urllib.request.urlopen(req) as response:
+            with urllib.request.urlopen(req, timeout=30) as response:
                 res_data = json.loads(response.read().decode("utf-8"))
                 try:
                     text = res_data["candidates"][0]["content"]["parts"][0]["text"]
@@ -211,15 +217,21 @@ def query_gemini_search(api_key, integration, previous_report=None):
                     return query_gemini_fallback(
                         url, headers, payload_no_search)
         except urllib.error.HTTPError as e:
-            if e.code == 429:
+            if e.code in [429, 500, 502, 503, 504]:
                 print(
-                    f"{YELLOW}Rate limit hit (429). Retrying attempt {attempt}/{max_retries} after sleeping {backoff} seconds...{RESET}")
+                    f"{YELLOW}API Error ({e.code}). Retrying attempt {attempt}/{max_retries} after sleeping {backoff} seconds...{RESET}")
                 time.sleep(backoff)
                 backoff *= 1.5
                 continue
             print(f"{RED}HTTP Error during query: {e.code} - {e.reason}{RESET}")
             break
         except Exception as e:
+            if "timed out" in str(e).lower() or "timeout" in str(e).lower():
+                print(
+                    f"{YELLOW}Timeout Error. Retrying attempt {attempt}/{max_retries} after sleeping {backoff} seconds...{RESET}")
+                time.sleep(backoff)
+                backoff *= 1.5
+                continue
             print(
                 f"{RED}Exception during search query: {str(e)}. Falling back to internal knowledge audit...{RESET}")
             return query_gemini_fallback(url, headers, payload_no_search)

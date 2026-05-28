@@ -16,7 +16,8 @@ import {
   RefreshCw,
   Mail,
   ChevronDown,
-  Settings
+  Settings,
+  Key
 } from 'lucide-react';
 
 const CustomDropdown = ({ options, value, onChange, placeholder, disabled }) => {
@@ -90,6 +91,46 @@ function App() {
 
   // UI State
   const [error, setError] = useState(null);
+
+  // Env State
+  const [showEnv, setShowEnv] = useState(false);
+  const [envInput, setEnvInput] = useState({ GEMINI_API_KEY: '', SMTP_USER: '', SMTP_PASS: '' });
+
+  const fetchEnv = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/env`);
+      if (response.ok) {
+        const data = await response.json();
+        setEnvInput({
+          GEMINI_API_KEY: data.GEMINI_API_KEY || '',
+          SMTP_USER: data.SMTP_USER || '',
+          SMTP_PASS: data.SMTP_PASS || ''
+        });
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const saveEnv = async (e) => {
+    if (e) e.preventDefault();
+    try {
+      const response = await fetch(`${API_URL}/api/env`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(envInput)
+      });
+      if (response.ok) {
+        setShowEnv(false);
+        setError(null);
+      } else {
+        const data = await response.json();
+        setError(data.error || 'Failed to save API keys');
+      }
+    } catch (err) {
+      setError(err.message);
+    }
+  };
 
   // Schedule State
   const [scheduleInput, setScheduleInput] = useState({ value: 0, unit: 'minutes', notify_email: '' });
@@ -189,7 +230,7 @@ function App() {
 
   const loadAll = async () => {
     setLoadingSummary(true);
-    await Promise.all([fetchSummary(), fetchHistory(), fetchQuickAdd(), fetchSchedule()]);
+    await Promise.all([fetchSummary(), fetchHistory(), fetchQuickAdd(), fetchSchedule(), fetchEnv()]);
     setLoadingSummary(false);
   };
 
@@ -270,18 +311,23 @@ function App() {
     }
   };
 
-  // Run Checks
-  const runAllChecks = async () => {
+  // Scan All APIs (Bulk AI Audit)
+  const scanAllApis = async () => {
     setChecking(true);
     setError(null);
+    setPdfUrl(null);
+    setAiOutput('');
     try {
-      const response = await fetch(`${API_URL}/api/check/all`, {
+      const response = await fetch(`${API_URL}/api/ai/audit_all`, {
         method: 'POST'
       });
-      if (!response.ok) throw new Error('Failed to execute health checks');
+      if (!response.ok) throw new Error('Failed to start bulk scan');
 
-      setLastCheck(`Last check: ${new Date().toLocaleTimeString()}`);
-      await Promise.all([fetchSummary(), fetchHistory()]);
+      setLastCheck(`AI Scan started at: ${new Date().toLocaleTimeString()}`);
+      setAiOutput("🚀 Deep Audit Pipeline started for ALL APIs in the background. You will receive PDF reports in your email as they complete.");
+
+      // Auto-scroll to bottom panel to show output
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
     } catch (err) {
       setError(err.message);
     } finally {
@@ -360,6 +406,13 @@ function App() {
           <span className="last-check-text">{lastCheck}</span>
           <button
             className="btn btn-outline"
+            onClick={() => setShowEnv(!showEnv)}
+            title="Environment Keys"
+          >
+            <Key size={14} /> API Keys
+          </button>
+          <button
+            className="btn btn-outline"
             onClick={() => setShowSchedule(!showSchedule)}
             title="Auto-Scan Settings"
           >
@@ -367,17 +420,62 @@ function App() {
           </button>
           <button
             className="btn btn-primary run-all-btn"
-            onClick={runAllChecks}
+            onClick={scanAllApis}
             disabled={checking || services.length === 0}
           >
             {checking ? (
-              <><RefreshCw className="spin-icon" /> Checking...</>
+              <><RefreshCw className="spin-icon" /> Scanning...</>
             ) : (
-              <><Play size={14} /> Run All Checks</>
+              <><Sparkles size={14} /> Run All Checks</>
             )}
           </button>
         </div>
       </nav>
+
+      {showEnv && (
+        <div style={{ padding: '0 30px' }}>
+          <div className="dashboard-card" style={{ marginBottom: '20px' }}>
+            <h3 className="card-title"><Key size={16} /> Global Environment Keys</h3>
+            <p className="card-subtitle" style={{ marginBottom: '15px' }}>Configure your GEMINI API key and SMTP credentials for email alerts. These are saved securely in your .env file.</p>
+            <form onSubmit={saveEnv} style={{ display: 'flex', gap: '15px', flexWrap: 'wrap' }}>
+              <div className="form-group" style={{ flex: '1 1 300px' }}>
+                <label>Gemini API Key</label>
+                <input
+                  type="password"
+                  value={envInput.GEMINI_API_KEY}
+                  onChange={e => setEnvInput({ ...envInput, GEMINI_API_KEY: e.target.value })}
+                  className="form-input"
+                  placeholder="AIzaSy..."
+                />
+              </div>
+              <div className="form-group" style={{ flex: '1 1 200px' }}>
+                <label>SMTP User Email</label>
+                <input
+                  type="text"
+                  value={envInput.SMTP_USER}
+                  onChange={e => setEnvInput({ ...envInput, SMTP_USER: e.target.value })}
+                  className="form-input"
+                  placeholder="admin@example.com"
+                />
+              </div>
+              <div className="form-group" style={{ flex: '1 1 200px' }}>
+                <label>SMTP Password</label>
+                <input
+                  type="password"
+                  value={envInput.SMTP_PASS}
+                  onChange={e => setEnvInput({ ...envInput, SMTP_PASS: e.target.value })}
+                  className="form-input"
+                  placeholder="App Password"
+                />
+              </div>
+              <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-end', paddingBottom: '15px' }}>
+                <button type="submit" className="btn btn-primary">Save Keys</button>
+                <button type="button" className="btn btn-outline" onClick={() => setShowEnv(false)}>Cancel</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {showSchedule && (
         <div style={{ padding: '0 30px' }}>
