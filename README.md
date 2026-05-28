@@ -1,57 +1,75 @@
-# API Auditor Web Application
+# API Monitor & Diagnostic Auditor
 
-This directory contains the completely isolated, full-stack implementation of the Autonomous API Diagnostic Auditor.
+A full-stack, autonomous API monitoring dashboard and diagnostic auditor. This application allows you to track the health of various API endpoints (latency, HTTP status) and use the **Gemini 2.5 Flash AI model** to generate in-depth, professional PDF audit reports for any failing or outdated integrations.
 
-## Project Structure
-- `/` (Root directory of Web App): Contains the Flask backend (`app.py`, `audit_apis.py` logic, `.env` file, and `requirements.txt`).
-- `/frontend`: Contains the React + Vite frontend application.
+## 🚀 Quick Start
 
----
+The fastest way to get everything up and running is to use the included startup script.
 
-## Getting Started
+1. **Configure Environment Variables**  
+   Create or edit the `.env` file in the root directory to include your credentials:
+   ```env
+   GEMINI_API_KEY="YOUR_GEMINI_KEY"
+   SMTP_USER="your-email@example.com"
+   SMTP_PASS="your-app-password"
+   ```
 
-### 1. Prerequisites
-Make sure you have `python3`, `pip`, and `node` (with `npm`) installed on your system.
+2. **Run the Startup Script**  
+   Run the `start_webapp.sh` script to automatically install dependencies and start both the backend and frontend servers:
+   ```bash
+   bash start_webapp.sh
+   ```
 
-### 2. Configure Environment Variables
-The `webapp/.env` file has been prepopulated with your API keys. If you need to update them, modify `webapp/.env`:
-```env
-GEMINI_API_KEY="YOUR_KEY"
-SMTP_USER="user"
-SMTP_PASS="pass"
-```
-
-### 3. Backend Setup
-Navigate to this directory (`webapp/`) and install Python dependencies:
-```bash
-pip install -r requirements.txt
-```
-Start the Flask backend server:
-```bash
-python3 app.py
-```
-The backend server will run on `http://localhost:5000`.
-
-### 4. Frontend Setup
-Navigate to the `frontend/` directory:
-```bash
-cd frontend
-```
-Install npm dependencies:
-```bash
-npm install
-```
-Start the Vite development server:
-```bash
-npm run dev
-```
-The React frontend will be available at `http://localhost:5173`.
+3. **Access the Application**  
+   - **Frontend Dashboard:** [http://localhost:5173](http://localhost:5173)
+   - **Backend API:** [http://localhost:5000](http://localhost:5000)
 
 ---
 
-## Features
-- **Centralized Form:** Input API details (title, docs URL, and description) directly from the browser.
-- **Model Selector:** Auditing powered by Gemini 2.5 Flash.
-- **Differential Caching:** Scans are automatically cached and compared. If there are no changes, the backend loads the previous report.
-- **In-Browser PDF Viewer:** Instantly view the styled, generated ReportLab PDF once the audit completes.
-- **Email Notifications:** Optionally send the HTML report with the PDF attachment to a specified developer email.
+## 📂 Project Structure
+
+- **`/backend`**: Contains the Flask API (`app.py`), the AI auditor logic (`audit_apis.py`), and the SQLite database configuration.
+- **`/frontend`**: Contains the React + Vite frontend dashboard.
+- **`.env`**: Stores sensitive configurations (API keys, SMTP details).
+- **`start_webapp.sh`**: The one-click startup script.
+
+---
+
+## 🛠️ Manual Setup
+
+If you prefer to run the components separately:
+
+### Backend Setup
+1. Install Python dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+2. Start the Flask backend server:
+   ```bash
+   python3 backend/app.py
+   ```
+
+### Frontend Setup
+1. Navigate to the `frontend/` directory:
+   ```bash
+   cd frontend
+   ```
+2. Install Node dependencies:
+   ```bash
+   npm install
+   ```
+3. Start the Vite development server:
+   ```bash
+   npm run dev
+   ```
+
+---
+
+## ✨ Key Features
+
+- **Automated Health Checks:** Monitor latency and HTTP status codes for all your third-party integrations.
+- **Centralized Dashboard:** Easily add, edit, and track API endpoints from a clean React-based interface.
+- **Gemini-Powered Diagnostics:** Leverage Gemini 2.5 Flash to automatically diagnose connection issues and suggest fixes.
+- **Professional PDF Reports:** Generate detailed, stylized PDF audits highlighting versioning, deprecations, and security risks.
+- **Differential Caching:** Scans are automatically cached to save AI credits. If there are no changes, the backend loads the previous report.
+- **Email Notifications:** Optionally send HTML reports with PDF attachments directly to a developer's inbox.
