@@ -65,6 +65,31 @@ If you prefer to run the components separately:
 
 ---
 
+## 📖 Usage Guide
+
+Once the application is running, follow these steps to manage and monitor your APIs:
+
+### 1. Adding an API to Monitor
+- Open the **Frontend Dashboard** (default: `http://localhost:5173`).
+- On the left panel, use the **Add a Service** form to manually enter the API name, endpoint URL, description, and notification email.
+- Alternatively, use the **Quick-Add Popular APIs** dropdown to instantly monitor common services (like Stripe, Twilio, etc.).
+
+### 2. Running Health Checks
+- Click the **Run All Checks** button in the top navigation bar to ping all registered APIs.
+- The dashboard will update the status indicators (Healthy, Warning, Issue) and display latency metrics.
+
+### 3. Automated Scanning & Notifications
+- Click **Schedule** in the top navigation to configure automatic background scans.
+- Set an interval (Minutes, Hours, or Days) and enter a global notification email. The system will automatically check the APIs and send email alerts if any issues are detected.
+
+### 4. AI Diagnostics & Deep Auditing
+- In the bottom **AI Diagnostics & Deep Auditing** panel, select one of your registered API services.
+- Choose your preferred AI model (Gemini, Mistral, or Cohere).
+- If an endpoint is failing, you can use **Diagnose Issue** or **Suggest Fixes**.
+- Click **Compile PDF Report** to generate a comprehensive audit document. The professional report is displayed as an embedded PDF and automatically saved to the backend `/reports` directory.
+
+---
+
 ## ✨ Key Features
 
 - **Automated Health Checks:** Monitor latency and HTTP status codes for all your third-party integrations.
