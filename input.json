@@ -1,0 +1,182 @@
+[
+  {
+    "title": "PayPal Standard / IPN",
+    "docsUrl": "https://developer.paypal.com/",
+    "description": "I am using PayPal Standard / IPN for Standard redirect checkouts & secure transaction notifications.. This is implemented in my local file `paypal.php`.",
+    "notify_email": "rohit.kodam@tekditechnologies.com"
+  },
+  {
+    "title": "PayPal Adaptive Payments",
+    "docsUrl": "https://developer.paypal.com/docs/archive/adaptive-payments/",
+    "description": "I am using PayPal Adaptive Payments for Split payment routing routing customer funds to vendor and platform accounts.. This is implemented in my local file `adaptive_paypal.php`.",
+    "notify_email": "rohit.kodam@tekditechnologies.com"
+  },
+  {
+    "title": "Amazon Easy Checkout",
+    "docsUrl": "https://pay.amazon.com/",
+    "description": "I am using Amazon Easy Checkout for Simplified Amazon login and checkout synchronization with IOPN.. This is implemented in my local file `qtcamazon_easycheckout.php`.",
+    "notify_email": "rohit.kodam@tekditechnologies.com"
+  },
+  {
+    "title": "Razorpay API",
+    "docsUrl": "https://razorpay.com/",
+    "description": "I am using Razorpay API for Indian payment flow with strict order mapping and automated invoice generation.. This is implemented in my local file `razorpay.php`.",
+    "notify_email": "rohit.kodam@tekditechnologies.com"
+  },
+  {
+    "title": "PayU India / PayU Biz",
+    "docsUrl": "https://in.payu.in/",
+    "description": "I am using PayU India / PayU Biz for Processing Cards, Netbanking, and UPI payments for Indian clients.. This is implemented in my local file `payu.php`.",
+    "notify_email": "rohit.kodam@tekditechnologies.com"
+  },
+  {
+    "title": "2Checkout (Verifone)",
+    "docsUrl": "https://www.2checkout.com/",
+    "description": "I am using 2Checkout (Verifone) for Global checkout portal managing card transactions and recurring subscriptions.. This is implemented in my local file `2checkout.php`.",
+    "notify_email": "rohit.kodam@tekditechnologies.com"
+  },
+  {
+    "title": "Authorize.Net AIM",
+    "docsUrl": "https://www.authorize.net/",
+    "description": "I am using Authorize.Net AIM for Direct on-site credit card checkouts using secure standard APIs.. This is implemented in my local file `authorizenet.php`.",
+    "notify_email": "rohit.kodam@tekditechnologies.com"
+  },
+  {
+    "title": "LinkPoint / First Data",
+    "docsUrl": "https://www.firstdata.com/",
+    "description": "I am using LinkPoint / First Data for High-volume merchant transaction capture and processing via secure XML APIs.. This is implemented in my local file `linkpoint.php`.",
+    "notify_email": "rohit.kodam@tekditechnologies.com"
+  },
+  {
+    "title": "Twilio SMS Gateway",
+    "docsUrl": "https://www.twilio.com/",
+    "description": "I am using Twilio SMS Gateway for REST API integration for global transaction text delivery and verification checks.. This is implemented in my local file `twilio.php`.",
+    "notify_email": "rohit.kodam@tekditechnologies.com"
+  },
+  {
+    "title": "Clickatell SMS Gateway",
+    "docsUrl": "https://www.clickatell.com/",
+    "description": "I am using Clickatell SMS Gateway for High-volume transactional SMS messaging across international networks.. This is implemented in my local file `clickatell.php`.",
+    "notify_email": "rohit.kodam@tekditechnologies.com"
+  },
+  {
+    "title": "mVaayoo SMS API",
+    "docsUrl": "http://www.mvaayoo.com/",
+    "description": "I am using mVaayoo SMS API for Bulk SMS alert delivery service for regional Indian notifications.. This is implemented in my local file `mvaayoo.php`.",
+    "notify_email": "rohit.kodam@tekditechnologies.com"
+  },
+  {
+    "title": "SMS Horizon Gateway",
+    "docsUrl": "https://www.smshorizon.in/",
+    "description": "I am using SMS Horizon Gateway for Dynamic regional SMS integration using simple HTTP/REST endpoints.. This is implemented in my local file `smshorizon.php`.",
+    "notify_email": "rohit.kodam@tekditechnologies.com"
+  },
+  {
+    "title": "Facebook JS SDK / Share API",
+    "docsUrl": "https://developers.facebook.com/docs/javascript",
+    "description": "I am using Facebook JS SDK / Share API for Prompts users to share products on Facebook in exchange for discount coupons.. This is implemented in my local file `share_for_discounts.php`.",
+    "notify_email": "rohit.kodam@tekditechnologies.com"
+  },
+  {
+    "title": "Google reCAPTCHA v2 / Invisible",
+    "docsUrl": "https://developers.google.com/recaptcha",
+    "description": "I am using Google reCAPTCHA v2 / Invisible for Protects registration and purchase checkout sequences from automated bot entries.. This is implemented in my local file `recaptcha.php`.",
+    "notify_email": "rohit.kodam@tekditechnologies.com"
+  },
+  {
+    "title": "Mailtrap SMTP Sandbox",
+    "docsUrl": "https://mailtrap.io/",
+    "description": "I am using Mailtrap SMTP Sandbox for Development-environment SMTP email interceptor used to test shipping alert designs.. This is implemented in my local file `configuration.php`.",
+    "notify_email": "rohit.kodam@tekditechnologies.com"
+  },
+  {
+    "title": "Resumable.js",
+    "docsUrl": "https://github.com/23/resumable.js",
+    "description": "I am using Resumable.js for Handles reliable multiple chunked file uploads for large digital media store products.. This is implemented in my local file `resumable.js`.",
+    "notify_email": "rohit.kodam@tekditechnologies.com"
+  },
+  {
+    "title": "Morris.js Charts",
+    "docsUrl": "http://morrisjs.github.io/morris.js/",
+    "description": "I am using Morris.js Charts for Renders beautiful, interactive timeline charts showing vendor revenue stats.. This is implemented in my local file `morris.min.js`.",
+    "notify_email": "rohit.kodam@tekditechnologies.com"
+  },
+  {
+    "title": "Raphal Vector engine",
+    "docsUrl": "https://dmitrybaranovskiy.github.io/raphael/",
+    "description": "I am using Rapha\u00ebl Vector engine for Vector library providing cross-browser support for SVG rendering (Morris backend).. This is implemented in my local file `raphael.min.js`.",
+    "notify_email": "rohit.kodam@tekditechnologies.com"
+  },
+  {
+    "title": "Swipebox Lightbox",
+    "docsUrl": "https://brutaldesign.github.io/swipebox/",
+    "description": "I am using Swipebox Lightbox for Responsive jQuery modal overlay supporting swipe gestures for product galleries.. This is implemented in my local file `jquery.swipebox.min.js`.",
+    "notify_email": "rohit.kodam@tekditechnologies.com"
+  },
+  {
+    "title": "Masonry Grid Layout",
+    "docsUrl": "https://masonry.desandro.com/",
+    "description": "I am using Masonry Grid Layout for Calculates optimal layout grids (masonry wall structure) to show dynamic catalog sizes.. This is implemented in my local file `masonry.pkgd.min.js`.",
+    "notify_email": "rohit.kodam@tekditechnologies.com"
+  },
+  {
+    "title": "Flowplayer Media",
+    "docsUrl": "https://flowplayer.com/",
+    "description": "I am using Flowplayer Media for Multimedia player used to support direct audio/video previews of digital items.. This is implemented in my local file `flowplayer-3.2.9.min.js`.",
+    "notify_email": "rohit.kodam@tekditechnologies.com"
+  },
+  {
+    "title": "FuelUX Wizard Loader",
+    "docsUrl": "https://getfuelux.com/",
+    "description": "I am using FuelUX Wizard Loader for Renders multi-step checkout sequences and store-configuration wizard steps.. This is implemented in my local file `fuelux2.3loader.min.js`.",
+    "notify_email": "rohit.kodam@tekditechnologies.com"
+  },
+  {
+    "title": "Toastr Notifications",
+    "docsUrl": "https://github.com/CodeSeven/toastr",
+    "description": "I am using Toastr Notifications for Non-blocking visual notification cards for \"Added to Cart\" triggers.. This is implemented in my local file `toastr.min.js`.",
+    "notify_email": "rohit.kodam@tekditechnologies.com"
+  },
+  {
+    "title": "MaxMind GeoIP",
+    "docsUrl": "https://www.maxmind.com/",
+    "description": "I am using MaxMind GeoIP for Country geolocation lookup using IP address tracking to calculate custom taxes.. This is implemented in my local file `tjmaxmind.php`.",
+    "notify_email": "rohit.kodam@tekditechnologies.com"
+  },
+  {
+    "title": "Mobile Detect",
+    "docsUrl": "http://mobiledetect.net/",
+    "description": "I am using Mobile Detect for Customizes layout view structures automatically on mobile browsers.. This is implemented in my local file `tjmobiledetect.php`.",
+    "notify_email": "rohit.kodam@tekditechnologies.com"
+  },
+  {
+    "title": "Dompdf PDF Renderer",
+    "docsUrl": "https://github.com/dompdf/dompdf",
+    "description": "I am using Dompdf PDF Renderer for HTML-to-PDF conversion engine for drafting order invoices and packing slips.. This is implemented in my local file `autoload.inc.php`.",
+    "notify_email": "rohit.kodam@tekditechnologies.com"
+  },
+  {
+    "title": "Emogrifier CSS inline",
+    "docsUrl": "https://github.com/MyIntervals/emogrifier",
+    "description": "I am using Emogrifier CSS inline for Automatically inlines external stylesheets into transactional email HTML templates.. This is implemented in my local file `CssDocument.php`.",
+    "notify_email": "rohit.kodam@tekditechnologies.com"
+  },
+  {
+    "title": "FPDI / FPDF Parser",
+    "docsUrl": "https://www.setasign.com/",
+    "description": "I am using FPDI / FPDF Parser for Imports existing PDF pages to serve as layout templates for dynamic text overlays.. This is implemented in my local file `tjfpdi.php`.",
+    "notify_email": "rohit.kodam@tekditechnologies.com"
+  },
+  {
+    "title": "Setu PAN Verification API",
+    "docsUrl": "https://setu.co/",
+    "description": "I am using Setu PAN Verification API for automating Indian Permanent Account Number (PAN) validation. This is implemented in my local file `setu.php`.",
+    "notify_email": "rohit.kodam@tekditechnologies.com"
+  },
+  {
+    "title": "YUDU API",
+    "docsUrl": "https://help.yudu.com/hc/en-us/articles/203869179-YUDU-API-Documentation",
+    "description": "I am using the YUDU REST API Version 2 (integrated in 2024) for digital publishing, content distribution, and reader management. My integration relies on standard V2 REST endpoints using HMAC signature authentication (API key and shared secret) to create editions and manage user access control. Please verify if Version 2 is still fully supported, if any specific endpoints are deprecated, and if a migration to a newer version is required.",
+    "notify_email": "rohit.kodam@tekditechnologies.com"
+  }
+]
